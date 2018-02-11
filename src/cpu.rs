@@ -42,3 +42,33 @@ impl Chip8 {
         self.memory[0x200..0x200 + buf.len()].copy_from_slice(&buf);
         Ok(())
     }
+
+    pub fn cycle(&mut self) {
+        let op = (self.memory[self.pc as usize] as u16) << 8
+            | self.memory[self.pc as usize + 1] as u16;
+        self.pc += 2;
+        self.execute(op);
+    }
+
+    fn execute(&mut self, op: u16) {
+        let x = ((op >> 8) & 0xF) as usize;
+        let y = ((op >> 4) & 0xF) as usize;
+        let n = (op & 0xF) as u8;
+        let nn = (op & 0xFF) as u8;
+        let nnn = op & 0xFFF;
+
+        match op >> 12 {
+            0x0 => match op {
+                0x00E0 => {
+                    self.gfx = [false; WIDTH * HEIGHT];
+                }
+                _ => {}
+            },
+            0x1 => self.pc = nnn,
+            0x6 => self.v[x] = nn,
+            0x7 => self.v[x] = self.v[x].wrapping_add(nn),
+            0xA => self.i = nnn,
+            _ => {}
+        }
+    }
+}
