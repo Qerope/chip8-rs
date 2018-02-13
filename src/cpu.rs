@@ -68,6 +68,24 @@ impl Chip8 {
             0x6 => self.v[x] = nn,
             0x7 => self.v[x] = self.v[x].wrapping_add(nn),
             0xA => self.i = nnn,
+            0xD => {
+                let vx = self.v[x] as usize;
+                let vy = self.v[y] as usize;
+                self.v[0xF] = 0;
+                for row in 0..n as usize {
+                    let byte = self.memory[self.i as usize + row];
+                    for col in 0..8 {
+                        if byte & (0x80 >> col) == 0 {
+                            continue;
+                        }
+                        let idx = (vy + row) * WIDTH + vx + col;
+                        if self.gfx[idx] {
+                            self.v[0xF] = 1;
+                        }
+                        self.gfx[idx] ^= true;
+                    }
+                }
+            }
             _ => {}
         }
     }
