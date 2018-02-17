@@ -72,8 +72,12 @@ impl Chip8 {
                 self.stack.push(self.pc);
                 self.pc = nnn;
             }
+            0x3 => if self.v[x] == nn { self.pc += 2 },
+            0x4 => if self.v[x] != nn { self.pc += 2 },
+            0x5 => if self.v[x] == self.v[y] { self.pc += 2 },
             0x6 => self.v[x] = nn,
             0x7 => self.v[x] = self.v[x].wrapping_add(nn),
+            0x9 => if self.v[x] != self.v[y] { self.pc += 2 },
             0xA => self.i = nnn,
             0xD => {
                 let vx = self.v[x] as usize;
