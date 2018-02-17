@@ -20,6 +20,7 @@ pub struct Chip8 {
     v: [u8; 16],
     i: u16,
     pc: u16,
+    stack: Vec<u16>,
     pub gfx: [bool; WIDTH * HEIGHT],
 }
 
@@ -32,6 +33,7 @@ impl Chip8 {
             v: [0; 16],
             i: 0,
             pc: 0x200,
+            stack: Vec::new(),
             gfx: [false; WIDTH * HEIGHT],
         }
     }
@@ -62,9 +64,14 @@ impl Chip8 {
                 0x00E0 => {
                     self.gfx = [false; WIDTH * HEIGHT];
                 }
+                0x00EE => self.pc = self.stack.pop().expect("stack underflow"),
                 _ => {}
             },
             0x1 => self.pc = nnn,
+            0x2 => {
+                self.stack.push(self.pc);
+                self.pc = nnn;
+            }
             0x6 => self.v[x] = nn,
             0x7 => self.v[x] = self.v[x].wrapping_add(nn),
             0xA => self.i = nnn,
