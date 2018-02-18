@@ -77,6 +77,36 @@ impl Chip8 {
             0x5 => if self.v[x] == self.v[y] { self.pc += 2 },
             0x6 => self.v[x] = nn,
             0x7 => self.v[x] = self.v[x].wrapping_add(nn),
+            0x8 => match n {
+                0x0 => self.v[x] = self.v[y],
+                0x1 => self.v[x] |= self.v[y],
+                0x2 => self.v[x] &= self.v[y],
+                0x3 => self.v[x] ^= self.v[y],
+                0x4 => {
+                    let (r, c) = self.v[x].overflowing_add(self.v[y]);
+                    self.v[0xF] = c as u8;
+                    self.v[x] = r;
+                }
+                0x5 => {
+                    let (r, b) = self.v[x].overflowing_sub(self.v[y]);
+                    self.v[0xF] = !b as u8;
+                    self.v[x] = r;
+                }
+                0x6 => {
+                    self.v[x] >>= 1;
+                    self.v[0xF] = self.v[x] & 1;
+                }
+                0x7 => {
+                    let (r, b) = self.v[y].overflowing_sub(self.v[x]);
+                    self.v[0xF] = !b as u8;
+                    self.v[x] = r;
+                }
+                0xE => {
+                    self.v[x] <<= 1;
+                    self.v[0xF] = self.v[x] >> 7;
+                }
+                _ => {}
+            },
             0x9 => if self.v[x] != self.v[y] { self.pc += 2 },
             0xA => self.i = nnn,
             0xD => {
