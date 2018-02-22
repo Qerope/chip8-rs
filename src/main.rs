@@ -38,6 +38,8 @@ fn main() {
         }
 
         chip.cycle();
+        chip.tick_timers();
+
         canvas.set_draw_color(Color::RGB(0, 0, 0));
         canvas.clear();
         canvas.set_draw_color(Color::RGB(255, 255, 255));

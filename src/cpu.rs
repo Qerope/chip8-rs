@@ -22,6 +22,8 @@ pub struct Chip8 {
     pc: u16,
     stack: Vec<u16>,
     pub gfx: [bool; WIDTH * HEIGHT],
+    pub delay_timer: u8,
+    pub sound_timer: u8,
 }
 
 impl Chip8 {
@@ -35,6 +37,8 @@ impl Chip8 {
             pc: 0x200,
             stack: Vec::new(),
             gfx: [false; WIDTH * HEIGHT],
+            delay_timer: 0,
+            sound_timer: 0,
         }
     }
 
@@ -43,6 +47,15 @@ impl Chip8 {
         File::open(path)?.read_to_end(&mut buf)?;
         self.memory[0x200..0x200 + buf.len()].copy_from_slice(&buf);
         Ok(())
+    }
+
+    pub fn tick_timers(&mut self) {
+        if self.delay_timer > 0 {
+            self.delay_timer -= 1;
+        }
+        if self.sound_timer > 0 {
+            self.sound_timer -= 1;
+        }
     }
 
     pub fn cycle(&mut self) {
@@ -127,6 +140,12 @@ impl Chip8 {
                     }
                 }
             }
+            0xF => match nn {
+                0x07 => self.v[x] = self.delay_timer,
+                0x15 => self.delay_timer = self.v[x],
+                0x18 => self.sound_timer = self.v[x],
+                _ => {}
+            },
             _ => {}
         }
     }
