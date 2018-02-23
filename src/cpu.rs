@@ -24,6 +24,7 @@ pub struct Chip8 {
     pub gfx: [bool; WIDTH * HEIGHT],
     pub delay_timer: u8,
     pub sound_timer: u8,
+    pub keys: [bool; 16],
 }
 
 impl Chip8 {
@@ -39,6 +40,7 @@ impl Chip8 {
             gfx: [false; WIDTH * HEIGHT],
             delay_timer: 0,
             sound_timer: 0,
+            keys: [false; 16],
         }
     }
 
@@ -140,6 +142,11 @@ impl Chip8 {
                     }
                 }
             }
+            0xE => match nn {
+                0x9E => if self.keys[self.v[x] as usize & 0xF] { self.pc += 2 },
+                0xA1 => if !self.keys[self.v[x] as usize & 0xF] { self.pc += 2 },
+                _ => {}
+            },
             0xF => match nn {
                 0x07 => self.v[x] = self.delay_timer,
                 0x15 => self.delay_timer = self.v[x],

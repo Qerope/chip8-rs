@@ -14,6 +14,16 @@ use cpu::{Chip8, HEIGHT, WIDTH};
 
 const SCALE: u32 = 12;
 
+fn keymap(k: Keycode) -> Option<usize> {
+    Some(match k {
+        Keycode::Num1 => 0x1, Keycode::Num2 => 0x2, Keycode::Num3 => 0x3, Keycode::Num4 => 0xC,
+        Keycode::Q => 0x4, Keycode::W => 0x5, Keycode::E => 0x6, Keycode::R => 0xD,
+        Keycode::A => 0x7, Keycode::S => 0x8, Keycode::D => 0x9, Keycode::F => 0xE,
+        Keycode::Z => 0xA, Keycode::X => 0x0, Keycode::C => 0xB, Keycode::V => 0xF,
+        _ => return None,
+    })
+}
+
 fn main() {
     let rom = env::args().nth(1).expect("usage: chip8-rs <rom>");
     let mut chip = Chip8::new();
@@ -33,6 +43,8 @@ fn main() {
         for event in events.poll_iter() {
             match event {
                 Event::Quit { .. } | Event::KeyDown { keycode: Some(Keycode::Escape), .. } => break 'main,
+                Event::KeyDown { keycode: Some(k), .. } => if let Some(i) = keymap(k) { chip.keys[i] = true },
+                Event::KeyUp { keycode: Some(k), .. } => if let Some(i) = keymap(k) { chip.keys[i] = false },
                 _ => {}
             }
         }
