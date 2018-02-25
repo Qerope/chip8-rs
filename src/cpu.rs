@@ -25,6 +25,7 @@ pub struct Chip8 {
     pub delay_timer: u8,
     pub sound_timer: u8,
     pub keys: [bool; 16],
+    waiting_key: Option<usize>,
 }
 
 impl Chip8 {
@@ -41,6 +42,7 @@ impl Chip8 {
             delay_timer: 0,
             sound_timer: 0,
             keys: [false; 16],
+            waiting_key: None,
         }
     }
 
@@ -151,6 +153,10 @@ impl Chip8 {
                 0x07 => self.v[x] = self.delay_timer,
                 0x15 => self.delay_timer = self.v[x],
                 0x18 => self.sound_timer = self.v[x],
+                0x0A => match self.keys.iter().position(|&k| k) {
+                    Some(k) => self.v[x] = k as u8,
+                    None => self.pc -= 2,
+                },
                 _ => {}
             },
             _ => {}
