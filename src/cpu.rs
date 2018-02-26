@@ -157,6 +157,26 @@ impl Chip8 {
                     Some(k) => self.v[x] = k as u8,
                     None => self.pc -= 2,
                 },
+                0x1E => self.i += self.v[x] as u16,
+                0x29 => self.i = (self.v[x] & 0xF) as u16 * 5,
+                0x33 => {
+                    let i = self.i as usize;
+                    self.memory[i] = self.v[x] / 100;
+                    self.memory[i + 1] = self.v[x] / 10 % 10;
+                    self.memory[i + 2] = self.v[x] % 10;
+                }
+                0x55 => {
+                    for k in 0..=x {
+                        self.memory[self.i as usize + k] = self.v[k];
+                    }
+                    self.i += x as u16 + 1;
+                }
+                0x65 => {
+                    for k in 0..=x {
+                        self.v[k] = self.memory[self.i as usize + k];
+                    }
+                    self.i += x as u16 + 1;
+                }
                 _ => {}
             },
             _ => {}
