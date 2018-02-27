@@ -1,5 +1,6 @@
 use std::fs::File;
 use std::io::Read;
+use rand::random;
 
 pub const WIDTH: usize = 64;
 pub const HEIGHT: usize = 32;
@@ -126,6 +127,8 @@ impl Chip8 {
             },
             0x9 => if self.v[x] != self.v[y] { self.pc += 2 },
             0xA => self.i = nnn,
+            0xB => self.pc = nnn + self.v[0] as u16,
+            0xC => self.v[x] = random::<u8>() & nn,
             0xD => {
                 let vx = self.v[x] as usize;
                 let vy = self.v[y] as usize;
