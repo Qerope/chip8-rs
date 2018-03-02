@@ -130,8 +130,8 @@ impl Chip8 {
             0xB => self.pc = nnn + self.v[0] as u16,
             0xC => self.v[x] = random::<u8>() & nn,
             0xD => {
-                let vx = self.v[x] as usize;
-                let vy = self.v[y] as usize;
+                let vx = self.v[x] as usize % WIDTH;
+                let vy = self.v[y] as usize % HEIGHT;
                 self.v[0xF] = 0;
                 for row in 0..n as usize {
                     let byte = self.memory[self.i as usize + row];
@@ -139,7 +139,7 @@ impl Chip8 {
                         if byte & (0x80 >> col) == 0 {
                             continue;
                         }
-                        let idx = (vy + row) * WIDTH + vx + col;
+                        let idx = ((vy + row) % HEIGHT) * WIDTH + (vx + col) % WIDTH;
                         if self.gfx[idx] {
                             self.v[0xF] = 1;
                         }
