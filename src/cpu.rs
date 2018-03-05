@@ -100,14 +100,6 @@ impl Chip8 {
                 0x1 => self.v[x] |= self.v[y],
                 0x2 => self.v[x] &= self.v[y],
                 0x3 => self.v[x] ^= self.v[y],
-                0x6 => {
-                    self.v[x] >>= 1;
-                    self.v[0xF] = self.v[x] & 1;
-                }
-                0xE => {
-                    self.v[x] <<= 1;
-                    self.v[0xF] = self.v[x] >> 7;
-                }
                 0x4 => {
                     let (r, c) = self.v[x].overflowing_add(self.v[y]);
                     self.v[x] = r;
@@ -122,6 +114,16 @@ impl Chip8 {
                     let (r, b) = self.v[y].overflowing_sub(self.v[x]);
                     self.v[x] = r;
                     self.v[0xF] = !b as u8;
+                }
+                0x6 => {
+                    let flag = self.v[x] & 1;
+                    self.v[x] >>= 1;
+                    self.v[0xF] = flag;
+                }
+                0xE => {
+                    let flag = self.v[x] >> 7;
+                    self.v[x] <<= 1;
+                    self.v[0xF] = flag;
                 }
                 _ => {}
             },
