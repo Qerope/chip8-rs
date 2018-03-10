@@ -174,13 +174,11 @@ impl Chip8 {
                     for k in 0..=x {
                         self.memory[self.i as usize + k] = self.v[k];
                     }
-                    self.i += x as u16 + 1;
                 }
                 0x65 => {
                     for k in 0..=x {
                         self.v[k] = self.memory[self.i as usize + k];
                     }
-                    self.i += x as u16 + 1;
                 }
                 _ => {}
             },
