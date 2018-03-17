@@ -50,7 +50,9 @@ fn main() {
             }
         }
 
-        chip.cycle();
+        for _ in 0..10 {
+            chip.cycle();
+        }
         chip.tick_timers();
 
         canvas.set_draw_color(Color::RGB(0, 0, 0));
