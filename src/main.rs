@@ -55,16 +55,19 @@ fn main() {
         }
         chip.tick_timers();
 
-        canvas.set_draw_color(Color::RGB(0, 0, 0));
-        canvas.clear();
-        canvas.set_draw_color(Color::RGB(255, 255, 255));
-        for (i, &on) in chip.gfx.iter().enumerate() {
-            if on {
-                let x = (i % WIDTH) as i32 * SCALE as i32;
-                let y = (i / WIDTH) as i32 * SCALE as i32;
-                canvas.fill_rect(Rect::new(x, y, SCALE, SCALE)).unwrap();
+        if chip.draw_flag {
+            chip.draw_flag = false;
+            canvas.set_draw_color(Color::RGB(0, 0, 0));
+            canvas.clear();
+            canvas.set_draw_color(Color::RGB(255, 255, 255));
+            for (i, &on) in chip.gfx.iter().enumerate() {
+                if on {
+                    let x = (i % WIDTH) as i32 * SCALE as i32;
+                    let y = (i / WIDTH) as i32 * SCALE as i32;
+                    canvas.fill_rect(Rect::new(x, y, SCALE, SCALE)).unwrap();
+                }
             }
+            canvas.present();
         }
-        canvas.present();
     }
 }

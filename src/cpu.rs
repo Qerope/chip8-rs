@@ -27,6 +27,7 @@ pub struct Chip8 {
     pub sound_timer: u8,
     pub keys: [bool; 16],
     waiting_key: Option<usize>,
+    pub draw_flag: bool,
 }
 
 impl Chip8 {
@@ -44,6 +45,7 @@ impl Chip8 {
             sound_timer: 0,
             keys: [false; 16],
             waiting_key: None,
+            draw_flag: false,
         }
     }
 
@@ -81,6 +83,7 @@ impl Chip8 {
             0x0 => match op {
                 0x00E0 => {
                     self.gfx = [false; WIDTH * HEIGHT];
+                    self.draw_flag = true;
                 }
                 0x00EE => self.pc = self.stack.pop().expect("stack underflow"),
                 _ => {}
@@ -148,6 +151,7 @@ impl Chip8 {
                         self.gfx[idx] ^= true;
                     }
                 }
+                self.draw_flag = true;
             }
             0xE => match nn {
                 0x9E => if self.keys[self.v[x] as usize & 0xF] { self.pc += 2 },
