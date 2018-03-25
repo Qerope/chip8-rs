@@ -190,3 +190,47 @@ impl Chip8 {
         }
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    fn run(ops: &[u16]) -> Chip8 {
+        let mut c = Chip8::new();
+        for (k, op) in ops.iter().enumerate() {
+            c.memory[0x200 + 2 * k] = (op >> 8) as u8;
+            c.memory[0x201 + 2 * k] = (op & 0xFF) as u8;
+        }
+        for _ in ops {
+            c.cycle();
+        }
+        c
+    }
+
+    #[test]
+    fn add_sets_carry() {
+        let c = run(&[0x60FF, 0x6102, 0x8014]);
+        assert_eq!(c.v[0], 1);
+        assert_eq!(c.v[0xF], 1);
+    }
+
+    #[test]
+    fn sub_sets_not_borrow() {
+        let c = run(&[0x6005, 0x6103, 0x8015]);
+        assert_eq!(c.v[0], 2);
+        assert_eq!(c.v[0xF], 1);
+    }
+
+    #[test]
+    fn flag_wins_when_x_is_vf() {
+        let c = run(&[0x6FFF, 0x6101, 0x8F14]);
+        assert_eq!(c.v[0xF], 1);
+    }
+
+    #[test]
+    fn shift_right_stores_lsb() {
+        let c = run(&[0x6003, 0x8006]);
+        assert_eq!(c.v[0], 1);
+        assert_eq!(c.v[0xF], 1);
+    }
+}
