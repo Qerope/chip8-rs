@@ -86,7 +86,7 @@ impl Chip8 {
                     self.draw_flag = true;
                 }
                 0x00EE => self.pc = self.stack.pop().expect("stack underflow"),
-                _ => {}
+                _ => panic!("unknown opcode {:04X} at {:04X}", op, self.pc - 2),
             },
             0x1 => self.pc = nnn,
             0x2 => {
@@ -128,7 +128,7 @@ impl Chip8 {
                     self.v[x] <<= 1;
                     self.v[0xF] = flag;
                 }
-                _ => {}
+                _ => panic!("unknown opcode {:04X} at {:04X}", op, self.pc - 2),
             },
             0x9 => if self.v[x] != self.v[y] { self.pc += 2 },
             0xA => self.i = nnn,
@@ -156,7 +156,7 @@ impl Chip8 {
             0xE => match nn {
                 0x9E => if self.keys[self.v[x] as usize & 0xF] { self.pc += 2 },
                 0xA1 => if !self.keys[self.v[x] as usize & 0xF] { self.pc += 2 },
-                _ => {}
+                _ => panic!("unknown opcode {:04X} at {:04X}", op, self.pc - 2),
             },
             0xF => match nn {
                 0x07 => self.v[x] = self.delay_timer,
@@ -184,9 +184,9 @@ impl Chip8 {
                         self.v[k] = self.memory[self.i as usize + k];
                     }
                 }
-                _ => {}
+                _ => panic!("unknown opcode {:04X} at {:04X}", op, self.pc - 2),
             },
-            _ => {}
+            _ => panic!("unknown opcode {:04X} at {:04X}", op, self.pc - 2),
         }
     }
 }
